@@ -1,5 +1,6 @@
 var fs = require('fs');
 var readline = require('readline');
+var {google} = require('googleapis');
 var OAuth2 = google.auth.OAuth2;
 var service = google.youtube('v3');
 
@@ -8,7 +9,7 @@ var service = google.youtube('v3');
 var SCOPES = ['https://www.googleapis.com/auth/youtube.force-ssl'];
 var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
     process.env.USERPROFILE) + '/.credentials/';
-var TOKEN_PATH = TOKEN_DIR + 'youtube-nodejs-quickstart.json';
+var TOKEN_PATH = TOKEN_DIR + 'client-secret.json';
 
 // Load client secrets from a local file.
 fs.readFile('client_secret.json', function processClientSecrets(err, content) {
@@ -17,7 +18,9 @@ fs.readFile('client_secret.json', function processClientSecrets(err, content) {
     return;
   }
 
+  authorize(JSON.parse(content), getPlaylistItems);
   authorize(JSON.parse(content), listVideoChannel);
+  authorize(JSON.parse(content), subscribeYoutube);
 });
 
 /**
@@ -115,7 +118,22 @@ function subscribeYoutube(auth) {
     }
   })
   .then(function(response) {
-      console.log(response)
+      console.log('Subscribed channel: ' + channelSub)
+  },
+  function(err) { console.error("Execute error", err); });
+}
+
+function getPlaylistItems(auth) {
+  channelId = 'UCWe3kkV742_VwUJCHOiCw1A';
+  var service = google.youtube('v3');
+  service.channels.list({
+    "auth": auth,
+    "part": "snippet,contentDetails",
+    "id": channelId
+  })
+  .then(function(response) {
+      playlistId = response.data.items[0].contentDetails.relatedPlaylists.uploads;
+      console.log('PlaylistId: ' + playlistId)
   },
   function(err) { console.error("Execute error", err); });
 }

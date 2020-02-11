@@ -1,0 +1,1 @@
+{"link1":"/artist/3648/","link2":"/lyricist/33806/","link3":"/composer/34735/","link_movie":"/movie/2/"}
